@@ -45,11 +45,11 @@ def search_IP(ip, known_ips_list):
 identified_ips_list = []                            # initialize list for identified IPs
 unidentified_ips_list = []                          # initialize list of un-identified IPs
 for ip in unknown_ips:                              # iterate through list of unknown IPs
-found_ip = search_IP(ip, agency_ip_ranges)      # call search_IP function to search through list of known IPs
-if found_ip is None:
-    unidentified_ips_list.append(ip)            # if IP address is not found, add to list of unidentified IPs
-else:
-    identified_ips_list.append(found_ip)        # otherwise, add to list of identified IPs
+    found_ip = search_IP(ip, agency_ip_ranges)      # call search_IP function to search through list of known IPs
+    if found_ip is None:
+        unidentified_ips_list.append(ip)            # if IP address is not found, add to list of unidentified IPs
+    else:
+        identified_ips_list.append(found_ip)        # otherwise, add to list of identified IPs
 
 # Create a dataframe to hold known and unknown IPs
 identified_ips_df = pd.DataFrame(identified_ips_list, columns=['IP', 'IP Sort', 'Agency', 'Domain', 'Description', 'Type', 'City', 'Address', 'Source'])
