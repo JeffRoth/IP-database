@@ -2,15 +2,31 @@
 import os
 import pandas as pd
 import ipaddress
-import matplotlib.pyplot as plt
+import sys
 
 # Read in agency IP ranges
 agency_ip_ranges = pd.read_excel('Agency_IP_ranges.xlsx')
 agency_ip_ranges = agency_ip_ranges.dropna(how='all')
 
-# Read in list of unknown IPs
-unknown_agencies = pd.read_excel('unknown_agencies.xlsx')
-unknown_ips = unknown_agencies['IP']
+# read unknown IPs
+while True:
+    try:
+        fname = input("Input file name for unknown IPs Excel workbook (or press 'enter' to exit): ")
+        if fname == "":
+            sys.exit()
+        wsname = input("Input name of worksheet: ")
+        unknown_agencies = pd.read_excel(fname, sheet_name=wsname)
+        break
+    except FileNotFoundError:
+        print(f"File '{fname}' does not exist.")
+    except ValueError:
+        print(f"Worksheet '{wsname}' does not exist.")
+
+try:
+    unknown_ips = unknown_agencies['IP']
+except KeyError:
+    print(f"Worksheet formatting incorrect. Unknown IPs should be in a column with header 'IP'.")
+    sys.exit()
 
 # Define search function
 def search_IP(ip, known_ips_list):
@@ -60,5 +76,8 @@ identified_ips_df.drop_duplicates(inplace=True, subset=['IP'])
 unidentified_ips_df.drop_duplicates(inplace=True, subset=['IP'])
 
 # Write out dataframes to CSV
-identified_ips_df.to_csv("identified_ips_incl_defender.csv", index=False)
-unidentified_ips_df.to_csv("unidentified_ips_incl_defender.csv", index=False)
+ofname = fname.split(".")[0]
+output_identified = ofname + wsname + '_identifiied.csv'
+output_unidentified = ofname + wsname + '_unidentified.csv'
+identified_ips_df.to_csv(output_identified, index=False)
+unidentified_ips_df.to_csv(output_unidentified, index=False)
